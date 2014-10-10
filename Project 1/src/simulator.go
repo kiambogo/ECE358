@@ -18,12 +18,15 @@ type Simulator struct {
 }
 
 type SimulatorResults struct {
-	droppedPackets  int
-	sentPackets     int
-	idleTicks       int
-	summedQueueSize uint32
+	packetsReceived	 uint32
+	droppedPackets   int
+	sentPackets      int
+	idleTicks        int
+	summedQueueSize  uint32
+	summedSojurnTime uint32
 
-	avgQueueSize uint32
+	avgSojurnTime    uint32
+	avgQueueSize     uint32
 }
 
 func (simulator *Simulator) initializeSimulator() {
@@ -57,7 +60,8 @@ func calculateArrival(s *Simulator) {
 func packetArrival(s *Simulator) {
 	if (s.timeToArrival == 0) {
 		if (s.bufferSize == -1 || s.queue.buffer.Len() < s.bufferSize) {
-			s.queue.enqueue(Packet{remainingBits:s.packetSize, generatedAt:s.tickCounter})
+			s.queue.enqueue(&Packet{remainingBits:s.packetSize, generatedAt:s.tickCounter})
+			s.results.packetsReceived++
 		} else {
 			s.results.droppedPackets++
 		}
@@ -74,6 +78,7 @@ func packetDeparture(s *Simulator) {
 		s.queue.peek().decrementRemainingBits(s.transmissionRate)
 		if (s.queue.peek().remainingBits <= 0) {
 			s.results.sentPackets++
+			s.results.summedSojurnTime += (uint32(s.tickCounter) - uint32(s.queue.peek().generatedAt))
 			s.queue.dequeue()
 		}
 	}
@@ -84,5 +89,6 @@ func updateCalculations(s *Simulator) {
 }
 
 func (simulator *Simulator) computeResults() {
-	simulator.results.avgQueueSize = simulator.results.summedQueueSize/ uint32(simulator.runTime)
+	simulator.results.avgQueueSize = simulator.results.summedQueueSize / uint32(simulator.runTime)
+	simulator.results.avgSojurnTime = simulator.results.summedSojurnTime / simulator.results.packetsReceived
 }

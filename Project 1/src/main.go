@@ -8,7 +8,7 @@ import (
 )
 
 var ticks = 1000
-var tick_duration = 1000000000
+var tick_duration = 100000
 var C = 1
 var L = 1000
 
@@ -31,6 +31,17 @@ func main() {
 		simulator.computeResults()
   }
 	fmt.Printf("Avg packets in queue: %v\n", simulator.results.avgQueueSize)
+	fmt.Printf("# packets received: %v\n", simulator.results.packetsReceived)
+	fmt.Printf("Summed sojurn time: %v\n", simulator.results.summedSojurnTime)
+
+	fmt.Printf("Avg sojurn time: %v\n", simulator.results.avgSojurnTime)
+
+	/*queue.enqueue(&Packet{L, 0})
+	fmt.Printf("Remaining: %v\n", queue.peek().remainingBits)
+	queue.peek().decrementRemainingBits(C)
+	fmt.Printf("Remaining: %v\n", queue.peek().remainingBits)*/
+
+
 }
 
 // Random number generator

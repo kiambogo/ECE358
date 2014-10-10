@@ -8,16 +8,16 @@ type Queue struct {
 	buffer *list.List
 }
 
-func (q Queue) enqueue(packet Packet) {
+func (q *Queue) enqueue(packet *Packet) {
 	q.buffer.PushBack(packet)
 }
 
-func (q Queue) dequeue() (packet Packet) {
-	e := Packet(q.buffer.Front().Value.(Packet))
+func (q *Queue) dequeue() *Packet {
+	e := q.buffer.Front().Value.(*Packet)
 	q.buffer.Remove(q.buffer.Front())
 	return e
 }
 
-func (q Queue) peek() (packet Packet) {
-	return q.buffer.Front().Value.(Packet)
+func (q *Queue) peek() *Packet {
+	return q.buffer.Front().Value.(*Packet)
 }

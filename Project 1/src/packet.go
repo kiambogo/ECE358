@@ -6,6 +6,6 @@ type Packet struct {
 	generatedAt int
 }
 
-func (p Packet) decrementRemainingBits(rate int) {
+func (p *Packet) decrementRemainingBits(rate int) {
   p.remainingBits -= rate
 }
