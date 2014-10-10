@@ -18,6 +18,6 @@ func (q Queue) dequeue() (packet Packet) {
 	return e
 }
 
-func (q Queue) peek() (Packet) {
+func (q Queue) peek() (packet Packet) {
 	return q.buffer.Front().Value.(Packet)
 }

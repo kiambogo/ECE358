@@ -1,55 +1,40 @@
 package main
 
 import (
-//  "fmt"
+  "fmt"
   "math/rand"
   "time"
 	"container/list"
-	"fmt"
 )
 
 var ticks = 1000
-var tick_duration = 100
-var transmissionRate = 1
+var tick_duration = 1000000000
+var C = 1
+var L = 1000
 
 func main() {
 
-  // Question 1
-//  var lambda = 100
-//  var C = 1
-//  var L = 2000
-
+// SIMULATION 1
 	queue := Queue{list.New()}
+  simulator := Simulator{
+		lambda:100,
+		transmissionRate:C,
+		packetSize:L,
+		runTime:tick_duration,
+		bufferSize:-1,
+		queue:queue}
 
-  simulator := Simulator{queue:queue}
-  simulator.startSimulation()
-//	var M = 0
+	simulator.initializeSimulator()
 
-	queue.enqueue(Packet{remainingBits:9000})
-	fmt.Println(queue.buffer.Len())
-	fmt.Println(queue.dequeue().remainingBits)
-	fmt.Println(queue.buffer.Len())
-
-
-
-  for i := 0; i < ticks; i++ {
-    generatePacket()
-    servicePacket()
+  for i := 0; i < 5; i++ {
+    simulator.startSimulation()
+		simulator.computeResults()
   }
+	fmt.Printf("Avg packets in queue: %v\n", simulator.results.avgQueueSize)
 }
 
 // Random number generator
 func randGenerator() (float64) {
   rand.Seed(time.Now().UTC().UnixNano())
 	return rand.Float64()
-}
-
-// The Packet generator
-func generatePacket() {
-  //fmt.Println("Checking if packet needs to be generated")
-}
-
-// The server for the packets
-func servicePacket() {
-  //fmt.Println("Servicing packet")
 }
