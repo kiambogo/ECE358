@@ -12,25 +12,26 @@ type Simulator struct {
 	runTime           int
 	bufferSize        int
 	queue             Queue
+	tickCounter       uint32
+	timeToArrival     uint32
 	results           SimulatorResults
-	tickCounter       int
-	timeToArrival     int
 }
 
 type SimulatorResults struct {
-	packetsReceived	 uint32
-	droppedPackets   uint32
-	sentPackets      int
-	idleTicks        int
-	summedQueueSize  uint32
-	summedSojurnTime uint32
-	avgSojurnTime    uint32
-	avgQueueSize     uint32
-	lossProbability	 float32
-	queueUtilization float64
+	packetsReceived   uint32
+	droppedPackets    uint32
+	sentPackets       uint32
+	idleTicks         uint32
+	summedQueueSize   uint32
+	summedSojurnTime  uint32
+	avgSojurnTime     uint32
+	avgQueueSize      uint32
+	lossProbability   float32
+	queueUtilization  float64
 }
 
 func (simulator *Simulator) initializeSimulator() {
+	simulator.queue = Queue{list.New()} // Reset the queue
 	simulator.tickCounter = 0
 	simulator.timeToArrival = 0
 	simulator.results.packetsReceived = 0
@@ -40,7 +41,6 @@ func (simulator *Simulator) initializeSimulator() {
 	simulator.results.sentPackets = 0
 	simulator.results.idleTicks = 0
 	simulator.results.lossProbability = 0
-	simulator.queue = Queue{list.New()}
 
 	simulator.results.avgSojurnTime = 0
 	simulator.results.avgQueueSize = 0
@@ -48,22 +48,20 @@ func (simulator *Simulator) initializeSimulator() {
 	calculateArrival(simulator)
 }
 
-func (simulator *Simulator) startSimulation() {
-//	fmt.Printf("Starting Simulator with λ=%v, L=%v, C=%v, bufferSize=%v ...\n",
-//		simulator.lambda, simulator.packetSize, simulator.transmissionRate, simulator.bufferSize)
-	simulator.initializeSimulator()
+func (s *Simulator) startSimulation() {
+	s.initializeSimulator()
 
-	for (simulator.runTime - simulator.tickCounter > 0) {
-		packetArrival(simulator)
-		packetDeparture(simulator)
-		updateCalculations(simulator)
+	for (uint32(s.runTime) - s.tickCounter > 0) {
+		packetArrival(s)
+		packetDeparture(s)
+		updateCalculations(s)
 
-		simulator.tickCounter++
+		s.tickCounter++
 	}
 }
 
 func calculateArrival(s *Simulator) {
-	s.timeToArrival = int(((-1/s.lambda) * math.Log(float64(1)-randGenerator()))*100000)
+	s.timeToArrival = uint32(((-1/s.lambda) * math.Log(float64(1)-randGenerator()))*100000)
 }
 
 func packetArrival(s *Simulator) {
@@ -97,9 +95,9 @@ func updateCalculations(s *Simulator) {
 	s.results.summedQueueSize += uint32(s.queue.buffer.Len())
 }
 
-func (simulator *Simulator) computeResults() {
-	simulator.results.avgQueueSize = simulator.results.summedQueueSize / uint32(simulator.runTime)
-	simulator.results.avgSojurnTime = simulator.results.summedSojurnTime / simulator.results.packetsReceived
-	simulator.results.lossProbability = float32(simulator.results.droppedPackets / (simulator.results.packetsReceived+simulator.results.droppedPackets))
-	simulator.results.queueUtilization = float64(float64(simulator.packetSize) * (simulator.lambda/float64(simulator.transmissionRate)))
+func (s *Simulator) computeResults() {
+	s.results.avgQueueSize = s.results.summedQueueSize / uint32(s.runTime)
+	s.results.avgSojurnTime = s.results.summedSojurnTime / s.results.packetsReceived
+	s.results.lossProbability = float32(s.results.droppedPackets / (s.results.packetsReceived+s.results.droppedPackets))
+	s.results.queueUtilization = float64(float64(s.packetSize) * (s.lambda/float64(s.transmissionRate)))
 }

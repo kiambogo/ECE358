@@ -3,7 +3,7 @@ package main
 // The Packet struct
 type Packet struct {
 	remainingBits int
-	generatedAt int
+	generatedAt uint32
 }
 
 func (p *Packet) decrementRemainingBits(rate int) {
