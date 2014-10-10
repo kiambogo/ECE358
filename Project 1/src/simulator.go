@@ -1,8 +1,8 @@
 package main
 
 import (
-  "fmt"
 	"math"
+	"container/list"
 )
 
 type Simulator struct {
@@ -19,28 +19,38 @@ type Simulator struct {
 
 type SimulatorResults struct {
 	packetsReceived	 uint32
-	droppedPackets   int
+	droppedPackets   uint32
 	sentPackets      int
 	idleTicks        int
 	summedQueueSize  uint32
 	summedSojurnTime uint32
-
 	avgSojurnTime    uint32
 	avgQueueSize     uint32
+	lossProbability	 float32
+	queueUtilization float64
 }
 
 func (simulator *Simulator) initializeSimulator() {
 	simulator.tickCounter = 0
+	simulator.timeToArrival = 0
+	simulator.results.packetsReceived = 0
+	simulator.results.summedQueueSize = 0
+	simulator.results.summedSojurnTime = 0
 	simulator.results.droppedPackets = 0
 	simulator.results.sentPackets = 0
 	simulator.results.idleTicks = 0
+	simulator.results.lossProbability = 0
+	simulator.queue = Queue{list.New()}
+
+	simulator.results.avgSojurnTime = 0
+	simulator.results.avgQueueSize = 0
 
 	calculateArrival(simulator)
 }
 
 func (simulator *Simulator) startSimulation() {
-	fmt.Printf("Starting Simulator with λ=%v, L=%v, C=%v, bufferSize=%v ...\n",
-		simulator.lambda, simulator.packetSize, simulator.transmissionRate, simulator.bufferSize)
+//	fmt.Printf("Starting Simulator with λ=%v, L=%v, C=%v, bufferSize=%v ...\n",
+//		simulator.lambda, simulator.packetSize, simulator.transmissionRate, simulator.bufferSize)
 	simulator.initializeSimulator()
 
 	for (simulator.runTime - simulator.tickCounter > 0) {
@@ -50,7 +60,6 @@ func (simulator *Simulator) startSimulation() {
 
 		simulator.tickCounter++
 	}
-	fmt.Printf("Completed Simulation\n")
 }
 
 func calculateArrival(s *Simulator) {
@@ -91,4 +100,6 @@ func updateCalculations(s *Simulator) {
 func (simulator *Simulator) computeResults() {
 	simulator.results.avgQueueSize = simulator.results.summedQueueSize / uint32(simulator.runTime)
 	simulator.results.avgSojurnTime = simulator.results.summedSojurnTime / simulator.results.packetsReceived
+	simulator.results.lossProbability = float32(simulator.results.droppedPackets / (simulator.results.packetsReceived+simulator.results.droppedPackets))
+	simulator.results.queueUtilization = float64(float64(simulator.packetSize) * (simulator.lambda/float64(simulator.transmissionRate)))
 }
