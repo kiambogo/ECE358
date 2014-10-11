@@ -9,8 +9,9 @@ type Simulator struct {
 	lambda            float64
 	transmissionRate  int
 	packetSize        int
-	runTime           int
 	bufferSize        int
+	ticks							int
+	tickDuration			int
 	queue             Queue
 	tickCounter       uint32
 	timeToArrival     uint32
@@ -26,7 +27,7 @@ type SimulatorResults struct {
 	summedSojurnTime  uint32
 	avgSojurnTime     uint32
 	avgQueueSize      uint32
-	lossProbability   float32
+	lossProbability   float64
 	queueUtilization  float64
 }
 
@@ -34,16 +35,17 @@ func (simulator *Simulator) initializeSimulator() {
 	simulator.queue = Queue{list.New()} // Reset the queue
 	simulator.tickCounter = 0
 	simulator.timeToArrival = 0
+
 	simulator.results.packetsReceived = 0
-	simulator.results.summedQueueSize = 0
-	simulator.results.summedSojurnTime = 0
 	simulator.results.droppedPackets = 0
 	simulator.results.sentPackets = 0
 	simulator.results.idleTicks = 0
-	simulator.results.lossProbability = 0
-
+	simulator.results.summedQueueSize = 0
+	simulator.results.summedSojurnTime = 0
 	simulator.results.avgSojurnTime = 0
 	simulator.results.avgQueueSize = 0
+	simulator.results.lossProbability = 0
+	simulator.results.queueUtilization = 0
 
 	calculateArrival(simulator)
 }
@@ -51,7 +53,7 @@ func (simulator *Simulator) initializeSimulator() {
 func (s *Simulator) startSimulation() {
 	s.initializeSimulator()
 
-	for (uint32(s.runTime) - s.tickCounter > 0) {
+	for (uint32(s.ticks) - s.tickCounter-1 > 0) {
 		packetArrival(s)
 		packetDeparture(s)
 		updateCalculations(s)
@@ -61,7 +63,7 @@ func (s *Simulator) startSimulation() {
 }
 
 func calculateArrival(s *Simulator) {
-	s.timeToArrival = uint32(((-1/s.lambda) * math.Log(float64(1)-randGenerator()))*100000)
+	s.timeToArrival = uint32(((-1/s.lambda) * math.Log(float64(1)-randGenerator()))*float64(s.tickDuration))
 }
 
 func packetArrival(s *Simulator) {
@@ -96,8 +98,8 @@ func updateCalculations(s *Simulator) {
 }
 
 func (s *Simulator) computeResults() {
-	s.results.avgQueueSize = s.results.summedQueueSize / uint32(s.runTime)
+	s.results.avgQueueSize = s.results.summedQueueSize / uint32(s.ticks)
 	s.results.avgSojurnTime = s.results.summedSojurnTime / s.results.packetsReceived
-	s.results.lossProbability = float32(s.results.droppedPackets / (s.results.packetsReceived+s.results.droppedPackets))
+	s.results.lossProbability = float64(s.results.droppedPackets) / float64(s.results.packetsReceived+s.results.droppedPackets)
 	s.results.queueUtilization = float64(float64(s.packetSize) * (s.lambda/float64(s.transmissionRate)))
 }
