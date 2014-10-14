@@ -2,10 +2,10 @@ package main
 
 // The Packet struct
 type Packet struct {
-	remainingBits int
-	generatedAt uint32
+	remainingBits uint32
+	generatedAt uint64
 }
 
-func (p *Packet) decrementRemainingBits(rate int) {
+func (p *Packet) decrementRemainingBits(rate uint32) {
   p.remainingBits -= rate
 }
