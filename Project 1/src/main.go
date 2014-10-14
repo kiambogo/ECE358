@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	question2()
+	//question2()
 	question3()
 	question5()
 }
@@ -71,7 +71,7 @@ func question3() {
 	tickDuration := uint64(1000000000)
 	C := uint32(1)
 	L := uint32(2000000)
-	M := 5
+	M := 1
 	bufferSize := -1
 
 	// Server instantiation
