@@ -1,7 +1,7 @@
 /*
 	ECE 358 Project 1
 	Christopher Poenaru  |  cpoenaru  |  20409287
-	Paul Trautrim        |  pctrautr  |  --------
+	Paul Trautrim        |  pctrautr  |  20348861
 
 	This code is original and is the work of us as partners.
  */
