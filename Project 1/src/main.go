@@ -15,7 +15,7 @@ import (
 
 func main() {
 	//question2()
-	question3()
+	//question3()
 	question5()
 }
 
@@ -119,11 +119,11 @@ func question5() {
 	C := uint32(1)
 	L := uint32(2000000)
 	M := 1
-	bufferSize := 25
+	bufferSize := 50
 
 	// Server instantiation
 
-	for i := 0.5; i < 1.5; i+=0.1 {
+	for i := 1.4; i < 1.5; i+=0.1 {
 		startTime := time.Now()
 		lambda := float32((i * float64(C) * float64(tickDuration)) / float64(L))
 		simulator := Simulator{lambda:lambda, transmissionRate:C, packetSize:L,

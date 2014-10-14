@@ -80,7 +80,6 @@ func packetArrival(s *Simulator) {
 		}
 		calculateArrival(s)
 	}
-
 }
 
 func packetDeparture(s *Simulator) {
