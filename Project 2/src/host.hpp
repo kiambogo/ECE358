@@ -1,3 +1,5 @@
+#pragma once
+
 #include "signal.hpp"
 #include "network.hpp"
 

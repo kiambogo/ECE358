@@ -1,3 +1,5 @@
+#pragma once
+
 class signal
 {
 public:
@@ -12,11 +14,3 @@ private:
 	int pos;
 	const int n;
 };
-
-void signal::propagate()
-{
-	pos += dir;
-	if (pos < 0 || pos >= n)
-		delete this;
-}
-
