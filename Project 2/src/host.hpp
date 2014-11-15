@@ -1,7 +1,7 @@
 #pragma once
 
 #include "signal.hpp"
-#include "network.hpp"
+#include "medium.hpp"
 
 class host
 {

@@ -7,7 +7,7 @@
 class medium
 {
 public:
-	medium(unsiged int propagation_delay, simulation *sim) : propagation_delay(propagation_delay), sim(sim) {};
+	medium(unsigned int propagation_delay, simulation *sim) : propagation_delay(propagation_delay), sim(sim) {};
 	void propagate();
 
 private:

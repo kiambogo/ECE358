@@ -4,7 +4,6 @@
 #include <map>
 #include <cmath>
 #include "host.hpp"
-#include "signal.hpp"
 
 class simulation
 {
