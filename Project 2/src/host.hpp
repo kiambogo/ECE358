@@ -47,7 +47,7 @@ void host::sense() {
     if (retrieveSignals() == 0) {
       if(state == 0) {
         state = 1;
-        bit_time_counter = (((simulation -> l) * 8) / (simulation -> w)) * (simulation -> tick_length);
+        bit_time_counter = (((simulation -> l) * 8) / (simulation -> w)) * (1/(simulation -> tick_length));
       }
     } else {
       if(state == 1) {

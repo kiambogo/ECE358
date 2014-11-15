@@ -1,5 +1,6 @@
 #include <list>
 #include <map>
+#include <cmath>
 #include "host.hpp"
 #include "signal.hpp"
 
@@ -43,7 +44,15 @@ void simulation::init()
 
 	// Create hosts
 
+	*host all_hosts [n] = {}
+
 	// Fill generated_packets map
+	for (int i = 0; i < n-1; i++) {
+		int next_packet = ((-1/a) * log(rand() % 1)) * (1/tick_length)
+		while(next_packet < (1/tick_length)) {
+			generated_packets.insert(next_packet, all_hosts[i])
+		}
+	}
 }
 
 void simulation::tick()
