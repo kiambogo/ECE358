@@ -22,6 +22,8 @@ void simulation::run()
 	avg_packet_transmission_delay /= packet_transmission_delays.size();
 	std::cerr << "Avg packet transmission delay: " << avg_packet_transmission_delay << " s\n";
 
+	std::cerr << "Detected Collisions: " << debug_detected_collision_cnt << "\n";
+
 	for (unsigned int i = 0; i < all_hosts.size(); i++) {
 		delete all_hosts[i];
 	}

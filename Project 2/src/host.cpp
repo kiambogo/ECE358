@@ -36,6 +36,7 @@ int host::transmit()
 	int ret = 0;
 	if (network->signal_at_pos(position)) {  // If there is another signal at this node
 		std::cout << sim->ticks << " " << this << " Moving to JAM state\n";
+		sim->debug_detected_collision_cnt++;
 		state = JAM;
 		bit_time_counter = JAMMING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 	} else {   // Transmit

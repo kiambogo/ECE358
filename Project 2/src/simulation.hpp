@@ -26,8 +26,9 @@ public:
 	std::vector<unsigned int> packet_transmission_delays;
 
 	unsigned int debug_wait_state_cnt;
+	unsigned int debug_detected_collision_cnt;
 
-	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), successful_packet_transmissions(0), debug_wait_state_cnt(0), run_time(run_time) {};
+	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), successful_packet_transmissions(0), debug_wait_state_cnt(0), debug_detected_collision_cnt(0), run_time(run_time) {};
 	void run();
 
 private:
