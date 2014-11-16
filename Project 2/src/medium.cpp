@@ -1,6 +1,8 @@
 #include "medium.hpp"
 #include "signal.hpp"
 #include "simulation.hpp"
+#include <cassert>
+#include <iostream>
 
 void medium::propagate()
 {
@@ -18,7 +20,9 @@ void medium::propagate()
 		}
 	}*/
 	for (auto it = signals.begin(); it != signals.end();) {
-		(*it)->pos += (*it)->dir * propagation_delay * sim->tick_length;
+		(*it)->pos += (double)(*it)->dir * (double)propagation_delay * (double)sim->tick_length;
+		//std::cout << "pos: " << (*it)->pos << "\n";
+		assert((*it)->pos % 10 == 0);
 		if ((*it)->pos < 0 || (*it)->pos > (sim->n - 1) * sim->distance_between_nodes) {
 			delete *it;
 			it = signals.erase(it);

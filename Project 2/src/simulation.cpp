@@ -13,6 +13,8 @@ void simulation::run()
 		tick();
 	}
 
+	std::cout << "End of simulation. Successful packet transmissions: " << successful_packet_transmissions << " Throughput: " << (successful_packet_transmissions * l * 8) / ((double)w * (double)run_time) << "\n";
+
 	for (int i = 0; i < all_hosts.size(); i++) {
 		delete all_hosts[i];
 	}
@@ -58,9 +60,10 @@ void simulation::tick()
 		std::cout << "Packet generated at tick " << ticks << "\n";
 		it->second->num_packets++;
 		if (it->second->active == false) {
-			std::cout << "Moving to active\n";
+			std::cout << "Moving " << it->second << " to active\n";
 			it->second->active = true;
 			active_hosts.push_back(it->second);
+			std::cout << "Active hosts: " << active_hosts.size() << "\n";
 		}
 	}
 
@@ -68,8 +71,9 @@ void simulation::tick()
 	for (std::vector<host *>::iterator it = active_hosts.begin(); it != active_hosts.end();) {
 		int ret = (*it)->run();
 		if (ret) { // Remove node from inactive list
-			std::cout << "Done\n";
+			std::cout << *it << " Done\n";
 			it = active_hosts.erase(it);
+			std::cout << "Active hosts: " << active_hosts.size() << "\n";
 		} else {
 			++it;
 		}

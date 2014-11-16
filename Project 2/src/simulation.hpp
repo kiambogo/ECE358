@@ -21,11 +21,15 @@ public:
 
 	const double tick_length = .00000005; // 50 nanoseconds
 
-	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), run_time(run_time) {};
+	unsigned int successful_packet_transmissions;
+	unsigned int ticks;
+
+	unsigned int debug_wait_state_cnt;
+
+	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), run_time(run_time), successful_packet_transmissions(0), debug_wait_state_cnt(0) {};
 	void run();
 
 private:
-	unsigned int ticks;
 	double run_time; // seconds
 
 	medium *network;

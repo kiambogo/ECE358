@@ -16,14 +16,18 @@ public:
 private:
 	static const unsigned int JAMMING_BITS = 48;
 	static const unsigned int SENSING_BITS = 96;
+	static const unsigned int TP = 512;
+	static const unsigned int KMAX = 10;
 	medium *network;
 	simulation *sim;
-	enum STATE {WAIT, TRANSMIT, JAM};
+	enum STATE {SENSE, TRANSMIT, JAM, WAIT};
 	STATE state;
-	long transmission_counter;
-	long bit_time_counter;
+	unsigned int transmission_counter;
+	unsigned int bit_time_counter;
+	unsigned int i;
 
 	int transmit();
-	void wait();
+	void sense();
 	void jam();
+	void wait();
 };
