@@ -39,8 +39,8 @@ int host::transmit()
 		state = JAM;
 		bit_time_counter = JAMMING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 	} else {   // Transmit
-		network->add_signal(new signal(position, false, signal::RIGHT));
-		network->add_signal(new signal(position, false, signal::LEFT));
+		network->add_signal(new class signal(position, false, signal::RIGHT));
+		network->add_signal(new class signal(position, false, signal::LEFT));
 		bit_time_counter--;
 		if (bit_time_counter == 0) {
 			sim->successful_packet_transmissions++;
@@ -119,8 +119,8 @@ unsigned int host::calculate_random_backoff()
 }
 
 void host::jam() {
-	network->add_signal(new signal(position, true, signal::RIGHT));
-	network->add_signal(new signal(position, true, signal::LEFT));
+	network->add_signal(new class signal(position, true, signal::RIGHT));
+	network->add_signal(new class signal(position, true, signal::LEFT));
 	bit_time_counter--;
 	if (bit_time_counter == 0) {
 		bit_time_counter = calculate_random_backoff();

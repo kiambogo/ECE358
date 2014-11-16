@@ -18,7 +18,7 @@ void medium::propagate()
 	}
 }
 
-void medium::add_signal(signal *s)
+void medium::add_signal(class signal *s)
 {
 	signals.push_back(s);
 }
