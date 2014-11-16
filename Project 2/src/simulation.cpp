@@ -4,6 +4,7 @@
 #include "simulation.hpp"
 #include "host.hpp"
 #include "medium.hpp"
+#include <iostream>
 
 void simulation::run()
 {
@@ -20,7 +21,7 @@ void simulation::init()
 
 	// Create hosts
 	for (int i = 0; i < n; i++) {
-		all_hosts.push_back(host(this, network));
+		all_hosts.push_back(new host(this, network));
 	}
 
 	// Fill generated_packets map
@@ -34,7 +35,7 @@ void simulation::init()
 
 		// Do this for the entire simulation run time and map each arrival time to the node
 		while (next_packet_generation_tick < (run_time / tick_length)) {
-			generated_packets.insert(std::pair<unsigned int,host>(next_packet_generation_tick, all_hosts[i]));
+			generated_packets.insert(std::pair<unsigned int,host*>(next_packet_generation_tick, all_hosts[i]));
 			next_packet_generation_tick += ((-1. / a) * log(1 - dis(gen))) * (1 / tick_length) + 0.5;
 		}
 	}
@@ -46,6 +47,26 @@ void simulation::tick()
 	network->propagate();
 
 	// Check for generated packets / mark hosts active
+	std::pair <std::multimap<unsigned int,host*>::iterator, std::multimap<unsigned int,host*>::iterator> ret;
+	ret = generated_packets.equal_range(ticks);
+	for (std::multimap<unsigned int,host*>::iterator it = ret.first; it != ret.second; ++it) {
+		std::cout << "Packet generated at tick " << ticks << "\n";
+		it->second->num_packets++;
+		if (it->second->active == false) {
+			std::cout << "Moving to active\n";
+			it->second->active = true;
+			active_hosts.push_back(it->second);
+		}
+	}
 
 	// Run host logic for each active host
+	for (std::vector<host *>::iterator it = active_hosts.begin(); it != active_hosts.end();) {
+		int ret = (*it)->run();
+		if (ret) { // Remove node from inactive list
+			std::cout << "Done\n";
+			it = active_hosts.erase(it);
+		} else {
+			++it;
+		}
+	}
 }

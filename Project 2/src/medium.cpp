@@ -24,13 +24,12 @@ void medium::add_signal(signal *s)
 	signals.push_back(*s);
 }
 
-unsigned int medium::signals_at_pos(unsigned int pos)
+bool medium::signal_at_pos(unsigned int pos)
 {
-	unsigned int count = 0;
 	for (int i = 0; i < signals.size(); i++) {
 		if (signals[i].pos == pos) {
-			count++;
+			return true;
 		}
 	}
-	return count;
+	return false;
 }

@@ -2,46 +2,71 @@
 #include "signal.hpp"
 #include "medium.hpp"
 #include "simulation.hpp"
+#include <cassert>
+#include <iostream>
 
-void host::run () {
-  switch (state) {
-    case 0: // Initial state for new packet arrival
-      sense();
-    break;
-    case 1: // State for transmitting
-      transmit();
-    break;
-    case 2: // State for jamming
-      jam();
-    break;
-  }
+const unsigned int JAMMING_BITS = 48;
+
+int host::run()
+{
+	int ret = 0;
+	switch (state) {
+	case WAIT: // Initial state for new packet arrival
+		wait();
+		break;
+	case TRANSMIT: // State for transmitting
+		ret = transmit();
+		break;
+	case JAM: // State for jamming
+		jam();
+		break;
+	}
+	return ret;
 }
 
-void host::transmit() {
-  if (num_packets > 0) {  // Sense
-    state = 2;
-    bit_time_counter = 48 * (1/sim->w);
-  } else {   // Transmit
-    network->add_signal(new signal(position, false, signal::RIGHT));
-    network->add_signal(new signal(position, false, signal::LEFT));
-  }
+int host::transmit()
+{
+	int ret = 0;
+	if (network->signal_at_pos(position)) {  // If there is another signal at this node
+		std::cout << this << " Moving to JAM state\n";
+		state = JAM;
+		bit_time_counter = JAMMING_BITS * (1. / sim->w) * (1. / sim->tick_length);
+	} else {   // Transmit
+		network->add_signal(new signal(position, false, signal::RIGHT));
+		network->add_signal(new signal(position, false, signal::LEFT));
+		bit_time_counter--;
+		if (bit_time_counter == 0) {
+			num_packets--;
+			if (num_packets == 0) {
+				std::cout << this << " Moving to WAIT state\n";
+				active = false;
+				state = WAIT;
+				ret = 1;
+			} else {
+				// Keep transmitting the next packet
+				bit_time_counter = (sim->l * 8.) / sim->w * (1./sim->tick_length);
+			}
+		}
+	}
+	return ret;
 }
 
-void host::sense() {
-  if (network->signals_at_pos(position) == 0) {
-    if(state == 0) {
-      state = 1;
-      bit_time_counter = ((sim->l * 8) / sim->w) * (1/sim->tick_length);
-    }
-  } else {
-    if(state == 1) {
-      state = 2;
-      bit_time_counter = 48 * (1/sim->w) * 200;
-    }
-  }
+void host::wait() {
+	if (!network->signal_at_pos(position)) { // Channel is clear
+		assert(state == WAIT);
+		std::cout << this << " Moving to TRANSMIT state\n";
+		state = TRANSMIT;
+		bit_time_counter = ((sim->l * 8.) / sim->w) * (1./sim->tick_length);
+		std::cout << bit_time_counter << "\n";
+	}
 }
 
 void host::jam() {
-  network->add_signal(new signal(position, true, signal::RIGHT));
-  network->add_signal(new signal(position, true, signal::LEFT));
+	network->add_signal(new signal(position, true, signal::RIGHT));
+	network->add_signal(new signal(position, true, signal::LEFT));
+	bit_time_counter--;
+	if (bit_time_counter == 0) {
+		// TODO: Implement exponential backoff
+		state = WAIT;
+	}
 }

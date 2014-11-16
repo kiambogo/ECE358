@@ -21,17 +21,17 @@ public:
 
 	const double tick_length = .00000005; // 50 nanoseconds
 
-	simulation(unsigned int n, unsigned int a, unsigned int p, unsigned int run_time) : n(n), a(a), p(p), run_time(run_time) {};
+	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), run_time(run_time) {};
 	void run();
 
 private:
 	unsigned int ticks;
-	unsigned int run_time;
+	double run_time; // seconds
 
 	medium *network;
-	std::vector<host> all_hosts;
-	std::vector<host> active_hosts;
-	std::multimap<unsigned int, host> generated_packets;
+	std::vector<host *> all_hosts;
+	std::vector<host *> active_hosts;
+	std::multimap<unsigned int, host *> generated_packets;
 
 	void init();
 	void tick();

@@ -12,7 +12,7 @@ public:
 	medium(unsigned int propagation_delay, simulation *sim) : propagation_delay(propagation_delay), sim(sim) {};
 	void propagate();
 	void add_signal(class signal *s);
-	unsigned int signals_at_pos(unsigned int pos);
+	bool signal_at_pos(unsigned int pos);
 
 private:
 	const unsigned int propagation_delay;
