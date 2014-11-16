@@ -10,7 +10,7 @@ public:
 	int   position;
 	bool  active;
 
-	host(simulation *sim, medium *network) : sim(sim), network(network), state(WAIT), active(false) {};
+	host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(WAIT), active(false), position(position), num_packets(0), transmission_counter(0), bit_time_counter(0) {};
 	int run();
 
 private:

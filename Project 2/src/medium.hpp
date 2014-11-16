@@ -16,6 +16,6 @@ public:
 
 private:
 	const unsigned int propagation_delay;
-	std::vector<class signal> signals;
+	std::vector<class signal *> signals;
 	simulation *sim;
 };

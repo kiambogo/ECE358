@@ -14,6 +14,7 @@ void question1()
 	// N=20, A=5, P=1, time=60s
 	simulation *sim = new simulation(20, 5, 1, .1);
 	sim->run();
+	delete sim;
 	// N=40, A=5, P=1, time=60s
 	// N=60, A=5, P=1, time=60s
 	// N=80, A=5, P=1, time=60s

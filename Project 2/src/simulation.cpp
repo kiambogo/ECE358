@@ -21,7 +21,7 @@ void simulation::init()
 
 	// Create hosts
 	for (int i = 0; i < n; i++) {
-		all_hosts.push_back(new host(this, network));
+		all_hosts.push_back(new host(this, network, i * distance_between_nodes));
 	}
 
 	// Fill generated_packets map
