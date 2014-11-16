@@ -12,6 +12,11 @@ void simulation::run()
 	for (ticks = 0; ticks < run_time / tick_length; ticks++) {
 		tick();
 	}
+
+	for (int i = 0; i < all_hosts.size(); i++) {
+		delete all_hosts[i];
+	}
+	delete network;
 }
 
 void simulation::init()
