@@ -36,6 +36,7 @@ void simulation::init()
 	// Create hosts
 	for (unsigned int i = 0; i < n; i++) {
 		all_hosts.push_back(new host(this, network, i * distance_between_nodes));
+		std::cout << "Added host " << i << " with pos " << i * distance_between_nodes << "\n";
 	}
 
 	// Fill generated_packets map

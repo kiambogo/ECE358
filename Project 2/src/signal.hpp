@@ -3,7 +3,7 @@
 class signal
 {
 public:
-	unsigned int pos;
+	int pos;
 	enum direction {LEFT = -1, RIGHT = 1};
 	bool jamming;
 	direction dir;
