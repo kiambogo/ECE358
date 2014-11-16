@@ -28,7 +28,7 @@ void host::transmit() {
 }
 
 void host::sense() {
-  if (retrieveSignals() == 0) {
+  if (network->signals_at_pos(position) == 0) {
     if(state == 0) {
       state = 1;
       bit_time_counter = ((sim->l * 8) / sim->w) * (1/sim->tick_length);
