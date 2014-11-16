@@ -6,6 +6,8 @@
 #include <random>
 #include <iostream>
 
+#define ONE_PERSISTENT
+
 host::host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(SENSE), active(false), position(position), i(0)
 {
 	bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
@@ -44,20 +46,16 @@ int host::transmit()
 		bit_time_counter--;
 		if (bit_time_counter == 0) {
 			sim->successful_packet_transmissions++;
+			i = 0;
 			unsigned int arrival_tick = packet_arrival_times.front();
 			sim->packet_transmission_delays.push_back(sim->ticks - arrival_tick);
 			packet_arrival_times.erase(packet_arrival_times.begin());
 			if (packet_arrival_times.empty()) {
-				std::cout << sim->ticks << " " << this << " Moving to SENSE state and marking inactive\n";
 				active = false;
-				state = SENSE;
-				bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 				ret = 1;
-			} else {
-				// Keep transmitting the next packet
-				std::cout << sim->ticks << " " << this << " Continuing to transmit next queued packet\n";
-				bit_time_counter = (sim->l * 8.) / sim->w * (1./sim->tick_length);
 			}
+			state = SENSE;
+			bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 		}
 	}
 	return ret;
@@ -73,16 +71,18 @@ void host::sense() {
 			std::cout << sim->ticks << " " << bit_time_counter << "\n";
 		}
 	} else {
-		/*static int q = 0;
-		q++;
-		if (q == 100000) {
-			std::cout << sim->ticks << " " << this << " busy channel\n";
-			q = 0;
-		}*/
+#ifdef ONE_PERSISTENT
 		// Restart sensing time
 		bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
-
-		// TODO: Implement other waits
+#elif NON_PERSISTENT
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dis(0, std::pow(2., (double)i) - 1);
+		bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
+		state = WAIT;
+#else
+		assert(false);
+#endif
 	}
 }
 
