@@ -15,6 +15,13 @@ void simulation::run()
 
 	std::cout << "End of simulation. Successful packet transmissions: " << successful_packet_transmissions << " Throughput: " << (successful_packet_transmissions * l * 8) / ((double)w * (double)run_time) << "\n";
 
+	long double avg_packet_transmission_delay = 0;
+	for (int i = 0; i < packet_transmission_delays.size(); i++) {
+		avg_packet_transmission_delay += packet_transmission_delays[i] * tick_length;
+	}
+	avg_packet_transmission_delay /= packet_transmission_delays.size();
+	std::cout << "Avg packet transmission delay: " << avg_packet_transmission_delay << " s\n";
+
 	for (int i = 0; i < all_hosts.size(); i++) {
 		delete all_hosts[i];
 	}
@@ -58,7 +65,7 @@ void simulation::tick()
 	ret = generated_packets.equal_range(ticks);
 	for (std::multimap<unsigned int,host*>::iterator it = ret.first; it != ret.second; ++it) {
 		std::cout << "Packet generated at tick " << ticks << "\n";
-		it->second->num_packets++;
+		it->second->packet_arrival_times.push_back(ticks);
 		if (it->second->active == false) {
 			std::cout << "Moving " << it->second << " to active\n";
 			it->second->active = true;

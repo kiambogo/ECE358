@@ -1,12 +1,14 @@
 #pragma once
 
+#include <vector>
+
 class medium;
 class simulation;
 
 class host
 {
 public:
-	int   num_packets;
+	std::vector<unsigned int> packet_arrival_times; // in ticks
 	int   position;
 	bool  active;
 
@@ -22,7 +24,6 @@ private:
 	simulation *sim;
 	enum STATE {SENSE, TRANSMIT, JAM, WAIT};
 	STATE state;
-	unsigned int transmission_counter;
 	unsigned int bit_time_counter;
 	unsigned int i;
 

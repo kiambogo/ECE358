@@ -23,6 +23,7 @@ public:
 
 	unsigned int successful_packet_transmissions;
 	unsigned int ticks;
+	std::vector<unsigned int> packet_transmission_delays;
 
 	unsigned int debug_wait_state_cnt;
 

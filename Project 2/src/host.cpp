@@ -6,7 +6,7 @@
 #include <random>
 #include <iostream>
 
-host::host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(SENSE), active(false), position(position), num_packets(0), transmission_counter(0), i(0)
+host::host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(SENSE), active(false), position(position), i(0)
 {
 	bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 }
@@ -44,8 +44,10 @@ int host::transmit()
 		bit_time_counter--;
 		if (bit_time_counter == 0) {
 			sim->successful_packet_transmissions++;
-			num_packets--;
-			if (num_packets == 0) {
+			unsigned int arrival_tick = packet_arrival_times.front();
+			sim->packet_transmission_delays.push_back(sim->ticks - arrival_tick);
+			packet_arrival_times.erase(packet_arrival_times.begin());
+			if (packet_arrival_times.empty()) {
 				std::cout << sim->ticks << " " << this << " Moving to SENSE state and marking inactive\n";
 				active = false;
 				state = SENSE;
