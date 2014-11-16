@@ -71,6 +71,7 @@ void host::sense() {
 
 			if (sim->p > 0 && dis(gen) >= sim->p) {
 				// Defer
+				assert(sim->p != 1);
 				has_deferred = true;
 				state = WAIT;
 				bit_time_counter = 2. * (double)(sim->n - 1) * (double)sim->distance_between_nodes / (double)network->propagation_delay * (1. / sim->tick_length) + 0.5;
@@ -84,26 +85,25 @@ void host::sense() {
 		}
 	} else {
 		if (sim->p == 0) { // Non-persistent is a special case
-			// Our random wait is the same as if a collision were detected
-			bit_time_counter = calculate_random_backoff();
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_real_distribution<> dis(0, 5);
+
+			unsigned int r = dis(gen) + 0.5;
 			state = WAIT;
+			bit_time_counter = (double)r * 2. * (double)(sim->n-1) * (double)sim->distance_between_nodes / (double)network->propagation_delay * (1. / sim->tick_length) + 0.5;
 		} else if (sim->p == 1) { // 1-persistent is a special case
 			// Restart sensing time
 			bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 		} else {
 			if (has_deferred) {
-				std::random_device rd;
-				std::mt19937 gen(rd());
-				std::uniform_real_distribution<> dis(0, 5);
-
-				unsigned int r = dis(gen) + 0.5;
-				bit_time_counter = (double)r * (double)(sim->n-1) * (double)sim->distance_between_nodes / (double)network->propagation_delay * 2. * (1. / sim->tick_length) + 0.5;
+				bit_time_counter = calculate_random_backoff();
 				state = WAIT;
 				has_deferred = false;
 			} else {
 				// Wait until next slot
 				state = WAIT;
-				bit_time_counter = 2. * (double)(sim->n - 1) / (double)network->propagation_delay + 0.5;
+				bit_time_counter = 2. * (double)(sim->n-1) * (double)sim->distance_between_nodes / (double)network->propagation_delay * (1. / sim->tick_length) + 0.5;
 			}
 		}
 	}
