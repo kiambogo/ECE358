@@ -27,7 +27,7 @@ public:
 
 	unsigned int debug_wait_state_cnt;
 
-	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), run_time(run_time), successful_packet_transmissions(0), debug_wait_state_cnt(0) {};
+	simulation(unsigned int n, unsigned int a, unsigned int p, double run_time) : n(n), a(a), p(p), successful_packet_transmissions(0), debug_wait_state_cnt(0), run_time(run_time) {};
 	void run();
 
 private:

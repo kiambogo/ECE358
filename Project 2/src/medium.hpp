@@ -13,9 +13,9 @@ public:
 	void propagate();
 	void add_signal(class signal *s);
 	bool signal_at_pos(unsigned int pos);
+	const unsigned int propagation_delay;
 
 private:
-	const unsigned int propagation_delay;
 	std::vector<class signal *> signals;
 	simulation *sim;
 };

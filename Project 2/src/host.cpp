@@ -6,9 +6,7 @@
 #include <random>
 #include <iostream>
 
-#define ONE_PERSISTENT
-
-host::host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(SENSE), active(false), position(position), i(0)
+host::host(simulation *sim, medium *network, unsigned int position) : active(false), position(position), sim(sim), network(network), state(SENSE), i(0), has_deferred(false)
 {
 	bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 }
@@ -47,6 +45,7 @@ int host::transmit()
 		if (bit_time_counter == 0) {
 			sim->successful_packet_transmissions++;
 			i = 0;
+			has_deferred = false;
 			unsigned int arrival_tick = packet_arrival_times.front();
 			sim->packet_transmission_delays.push_back(sim->ticks - arrival_tick);
 			packet_arrival_times.erase(packet_arrival_times.begin());
@@ -65,25 +64,58 @@ void host::sense() {
 	if (!network->signal_at_pos(position)) { // Channel is clear
 		bit_time_counter--;
 		if (bit_time_counter == 0) {
-			std::cout << sim->ticks << " " << this << " Moving to TRANSMIT state\n";
-			state = TRANSMIT;
-			bit_time_counter = ((sim->l * 8.) / sim->w) * (1./sim->tick_length);
-			std::cout << sim->ticks << " " << bit_time_counter << "\n";
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_real_distribution<> dis(0, 1);
+
+			if (sim->p > 0 && dis(gen) >= sim->p) {
+				// Defer
+				has_deferred = true;
+				state = WAIT;
+				bit_time_counter = 2. * (double)(sim->n - 1) / (double)network->propagation_delay + 0.5;
+			} else {
+				// Transmit
+				std::cout << sim->ticks << " " << this << " Moving to TRANSMIT state\n";
+				state = TRANSMIT;
+				bit_time_counter = ((sim->l * 8.) / sim->w) * (1./sim->tick_length);
+				std::cout << sim->ticks << " " << bit_time_counter << "\n";
+			}
 		}
 	} else {
-#ifdef ONE_PERSISTENT
-		// Restart sensing time
-		bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
-#elif NON_PERSISTENT
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<> dis(0, std::pow(2., (double)i) - 1);
-		bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
-		state = WAIT;
-#else
-		assert(false);
-#endif
+		if (sim->p == 0) { // Non-persistent is a special case
+			// Our random wait is the same as if a collision were detected
+			bit_time_counter = calculate_random_backoff();
+			state = WAIT;
+		} else if (sim->p == 1) { // 1-persistent is a special case
+			// Restart sensing time
+			bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
+		} else {
+			if (has_deferred) {
+				state = WAIT;
+				bit_time_counter = calculate_random_backoff();
+				has_deferred = false;
+			} else {
+				// Wait until next slot
+				state = WAIT;
+				bit_time_counter = 2. * (double)(sim->n - 1) / (double)network->propagation_delay + 0.5;
+			}
+		}
 	}
+}
+
+unsigned int host::calculate_random_backoff()
+{
+	if (i < KMAX) {
+		i++;
+	}
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(0, std::pow(2., (double)i) - 1);
+
+	unsigned int r = dis(gen) + 0.5;
+	unsigned int tb = (double)r * (double)TP * (1. / sim->w) * (1. / sim->tick_length) + 0.5;
+
+	return tb;
 }
 
 void host::jam() {
@@ -91,17 +123,7 @@ void host::jam() {
 	network->add_signal(new signal(position, true, signal::LEFT));
 	bit_time_counter--;
 	if (bit_time_counter == 0) {
-		if (i < KMAX) {
-			i++;
-		}
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<> dis(0, std::pow(2., (double)i) - 1);
-
-		unsigned int r = dis(gen) + 0.5;
-		unsigned int tb = (double)r * (double)TP * (1. / sim->w) * (1. / sim->tick_length) + 0.5;
-		std::cout << this << " r: " << r << " tb: " << tb << "\n";
-		bit_time_counter = tb;
+		bit_time_counter = calculate_random_backoff();
 
 		std::cout << sim->ticks << " " << this << " JAM finished, moving to WAIT state with counter " << bit_time_counter << "\n";
 		sim->debug_wait_state_cnt++;
@@ -112,10 +134,10 @@ void host::jam() {
 
 void host::wait() {
 	if (bit_time_counter == 0) {
-		std::cout << sim->ticks << " " << this << " WAIT finished, moving to SENSE state\n";
+		//std::cout << sim->ticks << " " << this << " WAIT finished, moving to SENSE state\n";
 		bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
 		sim->debug_wait_state_cnt--;
-		std::cout << sim->ticks << " " << this << " Wait state cnt: " << sim->debug_wait_state_cnt << "\n";
+		//std::cout << sim->ticks << " " << this << " Wait state cnt: " << sim->debug_wait_state_cnt << "\n";
 		state = SENSE;
 	}
 	bit_time_counter--;

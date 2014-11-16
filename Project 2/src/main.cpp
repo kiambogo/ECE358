@@ -12,7 +12,7 @@ int main()
 void question1()
 {
 	// N=20, A=5, P=1, time=60s
-	simulation *sim = new simulation(20, 5, 1, 10);
+	simulation *sim = new simulation(20, 5, 0.5, 10);
 	sim->run();
 	delete sim;
 	// N=40, A=5, P=1, time=60s
