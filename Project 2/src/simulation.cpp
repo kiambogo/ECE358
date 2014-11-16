@@ -13,14 +13,14 @@ void simulation::run()
 		tick();
 	}
 
-	std::cout << "End of simulation. Successful packet transmissions: " << successful_packet_transmissions << " Throughput: " << (successful_packet_transmissions * l * 8) / ((double)w * (double)run_time) << "\n";
+	std::cerr << "End of simulation. Successful packet transmissions: " << successful_packet_transmissions << " Throughput: " << (successful_packet_transmissions * l * 8) / ((double)w * (double)run_time) << "\n";
 
 	long double avg_packet_transmission_delay = 0;
 	for (unsigned int i = 0; i < packet_transmission_delays.size(); i++) {
 		avg_packet_transmission_delay += packet_transmission_delays[i] * tick_length;
 	}
 	avg_packet_transmission_delay /= packet_transmission_delays.size();
-	std::cout << "Avg packet transmission delay: " << avg_packet_transmission_delay << " s\n";
+	std::cerr << "Avg packet transmission delay: " << avg_packet_transmission_delay << " s\n";
 
 	for (unsigned int i = 0; i < all_hosts.size(); i++) {
 		delete all_hosts[i];
@@ -36,7 +36,6 @@ void simulation::init()
 	// Create hosts
 	for (unsigned int i = 0; i < n; i++) {
 		all_hosts.push_back(new host(this, network, i * distance_between_nodes));
-		std::cout << "Added host " << i << " with pos " << i * distance_between_nodes << "\n";
 	}
 
 	// Fill generated_packets map
