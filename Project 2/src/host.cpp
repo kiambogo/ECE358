@@ -22,8 +22,8 @@ void host::transmit() {
     state = 2;
     bit_time_counter = 48 * (1/sim->w);
   } else {   // Transmit
-    network->add_signal(new signal(position, false, signal::RIGHT, sim->n));
-    network->add_signal(new signal(position, false, signal::LEFT, sim->n));
+    network->add_signal(new signal(position, false, signal::RIGHT));
+    network->add_signal(new signal(position, false, signal::LEFT));
   }
 }
 
@@ -42,6 +42,6 @@ void host::sense() {
 }
 
 void host::jam() {
-  network->add_signal(new signal(position, true, signal::RIGHT, sim->n));
-  network->add_signal(new signal(position, true, signal::LEFT, sim->n));
+  network->add_signal(new signal(position, true, signal::RIGHT));
+  network->add_signal(new signal(position, true, signal::LEFT));
 }

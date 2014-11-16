@@ -11,7 +11,7 @@ class medium
 public:
 	medium(unsigned int propagation_delay, simulation *sim) : propagation_delay(propagation_delay), sim(sim) {};
 	void propagate();
-	void add_signal(signal &s);
+	void add_signal(signal *s);
 
 private:
 	const unsigned int propagation_delay;

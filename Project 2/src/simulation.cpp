@@ -22,7 +22,7 @@ void simulation::init()
 	// Create hosts
 
 	for (int i = 0; i < n; i++) {
-		all_hosts.push_back(host());
+		all_hosts.push_back(host(this, network));
 	}
 
 	// Fill generated_packets map
@@ -31,7 +31,7 @@ void simulation::init()
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<> dis(0, 1);
-		next_packet_generation_tick += ((-1/a) * log(dis(gen) - 1)) * (1/tick_length) + 1;
+		next_packet_generation_tick += ((-1/a) * log(dis(gen) - 1)) * (1/tick_length) + 0.5;
 		while (next_packet_generation_tick < (run_time / tick_length)) {
 			generated_packets.insert(std::pair<unsigned int,host>(next_packet_generation_tick, all_hosts[i]));
 		}

@@ -13,7 +13,7 @@ public:
   long  transmission_counter;
   long  bit_time_counter;
 
-  host(medium *network) : network(network) {};
+  host(simulation *sim, medium *network) : network(network) {};
   void run ();
   void transmit ();
   void sense ();
