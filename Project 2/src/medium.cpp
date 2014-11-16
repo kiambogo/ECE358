@@ -28,7 +28,7 @@ unsigned int medium::signals_at_pos(unsigned int pos)
 {
 	unsigned int count = 0;
 	for (int i = 0; i < signals.size(); i++) {
-		if (signals[i].pos = pos) {
+		if (signals[i].pos == pos) {
 			count++;
 		}
 	}

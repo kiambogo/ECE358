@@ -11,11 +11,11 @@ class medium
 public:
 	medium(unsigned int propagation_delay, simulation *sim) : propagation_delay(propagation_delay), sim(sim) {};
 	void propagate();
-	void add_signal(signal *s);
+	void add_signal(class signal *s);
 	unsigned int signals_at_pos(unsigned int pos);
 
 private:
 	const unsigned int propagation_delay;
-	std::vector<signal> signals;
+	std::vector<class signal> signals;
 	simulation *sim;
 };
