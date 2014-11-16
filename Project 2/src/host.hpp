@@ -1,7 +1,6 @@
 #pragma once
 
-#include "signal.hpp"
-#include "medium.hpp"
+class medium;
 
 class host
 {
@@ -14,23 +13,9 @@ public:
   long  bit_time_counter;
   medium *network;
 
-  host(*network medium)
+  host(medium *network) : network(network) {}; 
   void run ();
   void transmit ();
   void sense ();
   void jam ();
 };
-
-void host::run () {
-  switch (state)
-    case 0: // Initial state for new packet arrival
-      sense();
-    break;
-    case 1: // State for transmitting
-      transmit();
-    break;
-    case 2: // State for jamming
-      jam()
-    break;
-  }
-}

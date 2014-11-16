@@ -1,6 +1,7 @@
 #include <list>
 #include <map>
 #include <cmath>
+#include "simulation.hpp"
 #include "host.hpp"
 
 void simulation::run()
@@ -17,7 +18,7 @@ void simulation::init()
 
 	// Create hosts
 
-	*host all_hosts [n] = {}
+	/**host all_hosts [n] = {}
 
 	// Fill generated_packets map
 	for (int i = 0; i < n-1; i++) {
@@ -25,7 +26,7 @@ void simulation::init()
 		while(next_packet < (1/tick_length)) {
 			generated_packets.insert(next_packet, all_hosts[i])
 		}
-	}
+	}*/
 }
 
 void simulation::tick()

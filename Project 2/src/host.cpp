@@ -1,8 +1,9 @@
+#include "host.hpp"
 #include "signal.hpp"
 #include "medium.hpp"
 
 void host::run () {
-  switch (state)
+  switch (state) {
     case 0: // Initial state for new packet arrival
       sense();
     break;

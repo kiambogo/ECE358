@@ -1,2 +1,2 @@
-project2: main.cpp simulation.hpp medium.hpp signal.hpp host.hpp
-	g++ -o project2 main.cpp simulation.hpp medium.hpp signal.hpp host.hpp
+project2: main.cpp simulation.hpp simulation.cpp medium.hpp medium.cpp signal.hpp host.hpp host.cpp
+	g++ -o project2 main.cpp simulation.cpp medium.cpp host.cpp -I.

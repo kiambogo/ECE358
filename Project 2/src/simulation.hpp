@@ -5,6 +5,9 @@
 #include <cmath>
 #include "host.hpp"
 
+class medium;
+class host;
+
 class simulation
 {
 public:
@@ -13,6 +16,8 @@ public:
 	static const unsigned int w = 1000000; // 1 Mbps
 	static const unsigned int l = 1500;
 	const unsigned int p;
+
+	static const unsigned int distance_between_nodes = 10;
 
 	const static double tick_length = 50 * 10^-9; // seconds
 
