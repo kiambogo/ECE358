@@ -72,7 +72,7 @@ void host::sense() {
 				// Defer
 				has_deferred = true;
 				state = WAIT;
-				bit_time_counter = 2. * (double)(sim->n - 1) / (double)network->propagation_delay + 0.5;
+				bit_time_counter = 2. * (double)(sim->n - 1) * (double)sim->distance_between_nodes / (double)network->propagation_delay * (1. / sim->tick_length) + 0.5;
 			} else {
 				// Transmit
 				std::cout << sim->ticks << " " << this << " Moving to TRANSMIT state\n";
