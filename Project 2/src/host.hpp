@@ -10,10 +10,12 @@ public:
 	int   position;
 	bool  active;
 
-	host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(WAIT), active(false), position(position), num_packets(0), transmission_counter(0), bit_time_counter(0) {};
+	host(simulation *sim, medium *network, unsigned int position);
 	int run();
 
 private:
+	static const unsigned int JAMMING_BITS = 48;
+	static const unsigned int SENSING_BITS = 96;
 	medium *network;
 	simulation *sim;
 	enum STATE {WAIT, TRANSMIT, JAM};

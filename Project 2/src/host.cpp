@@ -5,7 +5,10 @@
 #include <cassert>
 #include <iostream>
 
-const unsigned int JAMMING_BITS = 48;
+host::host(simulation *sim, medium *network, unsigned int position) : sim(sim), network(network), state(WAIT), active(false), position(position), num_packets(0), transmission_counter(0)
+{
+	bit_time_counter = SENSING_BITS * (1. / sim->w) * (1. / sim->tick_length);
+}
 
 int host::run()
 {
@@ -53,11 +56,15 @@ int host::transmit()
 
 void host::wait() {
 	if (!network->signal_at_pos(position)) { // Channel is clear
-		assert(state == WAIT);
-		std::cout << this << " Moving to TRANSMIT state\n";
-		state = TRANSMIT;
-		bit_time_counter = ((sim->l * 8.) / sim->w) * (1./sim->tick_length);
-		std::cout << bit_time_counter << "\n";
+		bit_time_counter--;
+		if (bit_time_counter == 0) {
+			std::cout << this << " Moving to TRANSMIT state\n";
+			state = TRANSMIT;
+			bit_time_counter = ((sim->l * 8.) / sim->w) * (1./sim->tick_length);
+			std::cout << bit_time_counter << "\n";
+		}
+	} else {
+		// TODO: Implement other waits
 	}
 }
 
