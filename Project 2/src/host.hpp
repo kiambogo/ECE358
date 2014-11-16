@@ -1,6 +1,7 @@
 #pragma once
 
 class medium;
+class simulation;
 
 class host
 {
@@ -11,11 +12,14 @@ public:
   bool  active;
   long  transmission_counter;
   long  bit_time_counter;
-  medium *network;
 
-  host(medium *network) : network(network) {}; 
+  host(medium *network) : network(network) {};
   void run ();
   void transmit ();
   void sense ();
   void jam ();
+
+private:
+  medium *network;
+  simulation *sim;
 };

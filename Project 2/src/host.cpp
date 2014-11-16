@@ -1,6 +1,7 @@
 #include "host.hpp"
 #include "signal.hpp"
 #include "medium.hpp"
+#include "simulation.hpp"
 
 void host::run () {
   switch (state) {
@@ -11,7 +12,7 @@ void host::run () {
       transmit();
     break;
     case 2: // State for jamming
-      jam()
+      jam();
     break;
   }
 }
@@ -19,28 +20,28 @@ void host::run () {
 void host::transmit() {
   if (num_packets > 0) {  // Sense
     state = 2;
-    bit_time_counter = 48 * BIT_TIME;
+    bit_time_counter = 48 * (1/sim->w);
   } else {   // Transmit
-    new signal(position, false, RIGHT, n);
-    new signal(position, false, LEFT, n);
+    network->add_signal(new signal(position, false, signal::RIGHT, sim->n));
+    network->add_signal(new signal(position, false, signal::LEFT, sim->n));
   }
 }
 
 void host::sense() {
-    if (retrieveSignals() == 0) {
-      if(state == 0) {
-        state = 1;
-        bit_time_counter = (((simulation -> l) * 8) / (simulation -> w)) * (1/(simulation -> tick_length));
-      }
-    } else {
-      if(state == 1) {
-        state = 2;
-        bit_time_counter = 48 * (1/(simulation -> w)) * 200
-      }
+  if (retrieveSignals() == 0) {
+    if(state == 0) {
+      state = 1;
+      bit_time_counter = ((sim->l * 8) / sim->w) * (1/sim->tick_length);
     }
+  } else {
+    if(state == 1) {
+      state = 2;
+      bit_time_counter = 48 * (1/sim->w) * 200;
+    }
+  }
 }
 
 void host::jam() {
-  new signal(position, true, RIGHT, n);
-  new signal(position, true, LEFT, n);
+  network->add_signal(new signal(position, true, signal::RIGHT, sim->n));
+  network->add_signal(new signal(position, true, signal::LEFT, sim->n));
 }
