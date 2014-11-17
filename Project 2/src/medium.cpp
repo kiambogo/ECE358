@@ -25,8 +25,8 @@ void medium::add_signal(class signal *s)
 
 bool medium::signal_at_pos(unsigned int pos)
 {
-	for (unsigned int i = 0; i < signals.size(); i++) {
-		if (signals[i]->pos == (int)pos) {
+	for (auto it = signals.begin(); it != signals.end(); ++it) {
+		if ((*it)->pos == (int)pos) {
 			return true;
 		}
 	}

@@ -79,7 +79,7 @@ void simulation::tick()
 	// Run host logic for each active host
 	for (std::vector<host *>::iterator it = active_hosts.begin(); it != active_hosts.end();) {
 		int ret = (*it)->run();
-		if (ret) { // Remove node from inactive list
+		if (ret) { // Remove node from active list
 			std::cout << *it << " Done\n";
 			it = active_hosts.erase(it);
 			std::cout << "Active hosts: " << active_hosts.size() << "\n";
